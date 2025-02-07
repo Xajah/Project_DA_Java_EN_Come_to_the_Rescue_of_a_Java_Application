@@ -1,43 +1,72 @@
 package com.hemebiotech.analytics;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class AnalyticsCounter {
-	private static int headacheCount = 0;	
-	private static int rashCount = 0;		
-	private static int pupilCount = 0;		
+	private ISymptomReader reader;
+	private ISymptomWriter writer;
+	
+	
+   public AnalyticsCounter(ISymptomReader symptomReader,ISymptomWriter symptomWriter) {
+	   this.reader = symptomReader;
+	   this.writer = symptomWriter;
+	   
+   };
+   
+   public List<String> getSymptoms() { 
+	   List<String> symptoms = reader.GetSymptoms();
+	   return symptoms;
+   };
+   
+   public Map<String, Integer> countSymptoms(List<String> symptoms) {
+	   Map<String, Integer> symptomCounts = new HashMap<>();
+	    for (String symptom: symptoms) {
+	    	//if already exist on map/
+	    	
+	    	if (symptomCounts.containsKey(symptom)) {
+	    		symptomCounts.put(symptom, symptomCounts.get(symptom)+1);
+	    	}
+	    	//if not
+	    		else {symptomCounts.put(symptom, 1);};}
+	    		return symptomCounts;
+	    	}
+	    	
+
+       
+	   public Map<String, Integer> sortSymptoms(Map<String, Integer> symptoms) {
+	        // Convertir clés de la Map en liste triée
+	        List<String> sortedKeys = new ArrayList<>(symptoms.keySet());
+	        Collections.sort(sortedKeys); 
+
+	        // Créer la nouvelle Map triée
+	        Map<String, Integer> sortedSymptoms = new LinkedHashMap<>(); // LinkedHashMap pour conserver l'ordre
+	        for (String key : sortedKeys) {
+	            sortedSymptoms.put(key, symptoms.get(key)); // Remplir la nouvelle Map correctement triée
+	        };
+
+	        return sortedSymptoms;
+	    }
+	   
+	   public void writeSymptoms(Map<String, Integer> symptoms) {
+		   this.writer.writeSymptoms(symptoms);
+	   }
+
+       
+   
+	    
+   
+   
 	
 	public static void main(String args[]) throws Exception {
-		//get input
-		BufferedReader reader = new BufferedReader (new FileReader("symptoms.txt"));
-		String line = reader.readLine();
-
-		int i = 0;	
-		int headCount = 0;	
-		while (line != null) {
-			i++;	
-			System.out.println("symptom from file: " + line);
-			if (line.equals("headache")) {
-				headCount++;
-				System.out.println("number of headaches: " + headCount);
-			}
-			else if (line.equals("rush")) {
-				rashCount++;
-			}
-			else if (line.contains("pupils")) {
-				pupilCount++;
-			}
-
-			line = reader.readLine();	// get another symptom
-		}
 		
-		//generate output
-		FileWriter writer = new FileWriter ("result.out");
-		writer.write("headache: " + headacheCount + "\n");
-		writer.write("rash: " + rashCount + "\n");
-		writer.write("dialated pupils: " + pupilCount + "\n");
-		writer.close();
+		
+		
 	}
 }
